@@ -1,0 +1,31 @@
+#space  {
+    border: 1px solid #ccc;
+    position: relative;
+}
+#space canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 1020px;
+    display: flex;
+    justify-content: space-between;
+}
+.col {
+    width: 500px;
+}
+
+#controls label {
+    display: block;
+}
+#controls .body-controls-box {
+    margin-bottom: 20px;
+}
+
+.warning {
+    margin-top: 10px;
+    color: #f00;
+}
