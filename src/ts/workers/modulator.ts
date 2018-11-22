@@ -1,20 +1,19 @@
 // Этот воркер управляет всеми вычислениями модели гравитационного воздействия
-import settings from '../settings';
-import {MainCalculator} from "../lib/MainCalculator";
+import {Modulator} from "../lib/Modulator";
 
-let calculate = new MainCalculator();
+let modulator = new Modulator();
 
 self.onmessage = function(this: Worker, event: MessageEvent) {
     // todo переделать на WorkerEventMap если возможно
     switch (event.data.type) {
         case 'reset':
-            calculate.reset(new Float64Array(event.data.buffer));
+            modulator.reset(new Float64Array(event.data.buffer));
             break;
         case 'start':
-            calculate.start();
+            modulator.start();
             break;
         case 'stop':
-            calculate.stop();
+            modulator.stop();
             break;
     }
 };

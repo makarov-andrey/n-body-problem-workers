@@ -10,7 +10,7 @@ let arrayLength =
     buffer = new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * arrayLength),
     float64 = new Float64Array(buffer);
 
-let worker = new Worker('/dist/workers/calculate.js');
+let worker = new Worker('/dist/workers/modulator.js');
 worker.postMessage({
     type: 'reset',
     buffer: buffer
