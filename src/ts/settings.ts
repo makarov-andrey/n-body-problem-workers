@@ -42,8 +42,10 @@ export default {
             }
         ]
     })(), // начальные стейты тел в системе
-    dimension: 2, // мерность пространства
+    dimensionsAmount: 2, // мерность пространства
     admissibleMeasurementError: 1000, // допустимая погрешность todo найти заебатую
     maxIntegrationStep: Math.pow(2, -15), // максимальный шаг интеграции по времени
     integrationTime: Math.pow(2, -13), // время интегрирования одного цикла проверки погрешности
+    timeCoefficient: 1, // показатель течения времени
+    renderingScale: 3e6, // масштаб отрисовки
 };
