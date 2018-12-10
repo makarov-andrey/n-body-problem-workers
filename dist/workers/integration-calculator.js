@@ -218,11 +218,11 @@ class IntegrationCalculator {
         return new Promise(resolve => {
             let id = Math.random(), onmessage = (event) => {
                 if (event.data.type === 'net-gravity-force-calculation-result' && event.data.id === id) {
-                    this.gravityForceCalculationWorkers[bodyIndex].removeEventListener('onmessage', onmessage);
+                    this.gravityForceCalculationWorkers[bodyIndex].removeEventListener('message', onmessage);
                     resolve(event.data.result);
                 }
             };
-            this.gravityForceCalculationWorkers[bodyIndex].addEventListener('onmessage', onmessage);
+            this.gravityForceCalculationWorkers[bodyIndex].addEventListener('message', onmessage);
             this.gravityForceCalculationWorkers[bodyIndex].postMessage({
                 type: 'calculate-net-gravity-force',
                 id: id,
@@ -235,12 +235,12 @@ class IntegrationCalculator {
         return new Promise(resolve => {
             let bodyAccessor = modelAccessor.getBody(bodyIndex), id = Math.random(), onmessage = (event) => {
                 if (event.data.type === 'exertion-calculation-result' && event.data.id === id) {
-                    this.gravityForceCalculationWorkers[bodyIndex].removeEventListener('onmessage', onmessage);
+                    this.gravityForceCalculationWorkers[bodyIndex].removeEventListener('message', onmessage);
                     bodyAccessor.rewrite(event.data.result);
                     resolve();
                 }
             };
-            this.gravityForceCalculationWorkers[bodyIndex].addEventListener('onmessage', onmessage);
+            this.gravityForceCalculationWorkers[bodyIndex].addEventListener('message', onmessage);
             this.gravityForceCalculationWorkers[bodyIndex].postMessage({
                 type: 'calculate-exertion',
                 id: id,
@@ -271,13 +271,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const IntegrationCalculator_1 = __webpack_require__(/*! ../lib/calculators/IntegrationCalculator */ "./src/ts/lib/calculators/IntegrationCalculator.ts");
 const CelestialModelAccessor_1 = __webpack_require__(/*! ../lib/accessors/CelestialModelAccessor */ "./src/ts/lib/accessors/CelestialModelAccessor.ts");
 let calculator = new IntegrationCalculator_1.IntegrationCalculator();
-self.onmessage = function (event) {
+addEventListener('message', (event) => {
     // todo переделать на WorkerEventMap если возможно
     switch (event.data.type) {
         case 'integrate':
             calculator.integrate(new CelestialModelAccessor_1.CelestialModelAccessor(event.data.model), event.data.integrationTime, event.data.integrationStep)
                 .then(result => {
-                this.postMessage({
+                postMessage({
                     type: 'integration-result',
                     id: event.data.id,
                     result: result.baseArray
@@ -285,7 +285,7 @@ self.onmessage = function (event) {
             });
             break;
     }
-};
+});
 
 
 /***/ })

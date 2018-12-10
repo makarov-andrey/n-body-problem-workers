@@ -8,11 +8,11 @@ import {BodyAccessor} from "../lib/accessors/BodyAccessor";
 let netGravitationForceCalculator = new NetGravitationForceCalculator();
 let gravitationForceExertionCalculator = new GravitationForceExertionCalculator();
 
-(self as unknown as Worker).onmessage = function(event: MessageEvent) {
+addEventListener('message', (event: MessageEvent) => {
     // todo переделать на WorkerEventMap если возможно
     switch (event.data.type) {
         case 'calculate-net-gravity-force':
-            this.postMessage({
+            postMessage({
                 type: 'net-gravity-force-calculation-result',
                 id: event.data.id,
                 result: netGravitationForceCalculator.calculate(
@@ -22,7 +22,7 @@ let gravitationForceExertionCalculator = new GravitationForceExertionCalculator(
             });
             break;
         case 'calculate-exertion':
-            this.postMessage({
+            postMessage({
                 type: 'exertion-calculation-result',
                 id: event.data.id,
                 result: gravitationForceExertionCalculator
@@ -35,4 +35,4 @@ let gravitationForceExertionCalculator = new GravitationForceExertionCalculator(
             });
             break;
     }
-};
+});

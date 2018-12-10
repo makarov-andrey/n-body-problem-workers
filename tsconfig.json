@@ -5,7 +5,8 @@
     "sourceMap": true,
     "jsx": "react",
     "outDir": "./dist/",
-    "allowJs": true
+    "allowJs": true,
+    "lib": ["webworker", "es2017", "dom"]
   },
   "exclude": [
     "node_modules"

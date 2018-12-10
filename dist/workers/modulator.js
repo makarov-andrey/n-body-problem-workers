@@ -108,7 +108,7 @@ class Modulator {
         ];
     }
     reset(baseArray) {
-        this.celestialModel = new CelestialModelAccessor_1.CelestialModelAccessor(baseArray);
+        this.modelAccessor = new CelestialModelAccessor_1.CelestialModelAccessor(baseArray);
     }
     start() {
         if (!this.started) {
@@ -128,15 +128,15 @@ class Modulator {
                 this.integrationStep /= 4;
             } while (this.determineMeasurementError(results[0], results[1]) > settings_1.default.admissibleMeasurementError);
             this.integrationStep = Math.min(this.integrationStep * 8, settings_1.default.maxIntegrationStep);
-            this.celestialModel.rewrite(results[0]);
+            this.modelAccessor.rewrite(results[0]);
             let realNow = Date.now(), imagineNow = startedTime + settings_1.default.integrationTime;
             if (imagineNow < realNow) {
                 //вычисляли слишком долго, надо показывать юзеру, что компуктер не справляется и он смотрит проекцию в замедленном варианте
-                this.celestialModel.timeCoefficient = (imagineNow - startedTime) / (realNow - startedTime);
+                this.modelAccessor.timeCoefficient = (imagineNow - startedTime) / (realNow - startedTime);
             }
             else {
                 //вычисляли слишком быстро.
-                this.celestialModel.timeCoefficient = 1;
+                this.modelAccessor.timeCoefficient = 1;
                 //костыль для sleep чтобы не обгонять реальное время
                 //todo найти способ сделать точный асинхронный sleep в наносекундах
                 while (Date.now() < imagineNow)
@@ -149,14 +149,14 @@ class Modulator {
             return new Promise(resolve => {
                 let id = Math.random(), onmessage = (event) => {
                     if (event.data.type === 'integration-result' && event.data.id === id) {
-                        this.integrationWorkers[key].removeEventListener('onmessage', onmessage);
+                        this.integrationWorkers[key].removeEventListener('message', onmessage);
                         resolve(event.data.result);
                     }
                 };
-                this.integrationWorkers[key].addEventListener('onmessage', onmessage);
+                this.integrationWorkers[key].addEventListener('message', onmessage);
                 this.integrationWorkers[key].postMessage({
                     type: 'integrate',
-                    model: this.celestialModel.baseArray,
+                    model: this.modelAccessor.baseArray,
                     integrationTime: integrationTime,
                     integrationStep: value,
                     id: id
@@ -356,7 +356,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Этот воркер управляет всеми вычислениями модели гравитационного воздействия
 const Modulator_1 = __webpack_require__(/*! ../lib/Modulator */ "./src/ts/lib/Modulator.ts");
 let modulator = new Modulator_1.Modulator();
-self.onmessage = function (event) {
+addEventListener('message', (event) => {
     // todo переделать на WorkerEventMap если возможно
     switch (event.data.type) {
         case 'reset':
@@ -369,7 +369,7 @@ self.onmessage = function (event) {
             modulator.stop();
             break;
     }
-};
+});
 
 
 /***/ })

@@ -276,18 +276,18 @@ const CelestialModelAccessor_1 = __webpack_require__(/*! ../lib/accessors/Celest
 const BodyAccessor_1 = __webpack_require__(/*! ../lib/accessors/BodyAccessor */ "./src/ts/lib/accessors/BodyAccessor.ts");
 let netGravitationForceCalculator = new NetGravitationForceCalculator_1.NetGravitationForceCalculator();
 let gravitationForceExertionCalculator = new GravitationForceExertionCalculator_1.GravitationForceExertionCalculator();
-self.onmessage = function (event) {
+addEventListener('message', (event) => {
     // todo переделать на WorkerEventMap если возможно
     switch (event.data.type) {
         case 'calculate-net-gravity-force':
-            this.postMessage({
+            postMessage({
                 type: 'net-gravity-force-calculation-result',
                 id: event.data.id,
                 result: netGravitationForceCalculator.calculate(new CelestialModelAccessor_1.CelestialModelAccessor(event.data.model), event.data.index)
             });
             break;
         case 'calculate-exertion':
-            this.postMessage({
+            postMessage({
                 type: 'exertion-calculation-result',
                 id: event.data.id,
                 result: gravitationForceExertionCalculator
@@ -296,7 +296,7 @@ self.onmessage = function (event) {
             });
             break;
     }
-};
+});
 
 
 /***/ })

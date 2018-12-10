@@ -4,7 +4,7 @@ import {CelestialModelAccessor} from "../lib/accessors/CelestialModelAccessor";
 
 let calculator = new IntegrationCalculator();
 
-(self as unknown as Worker).onmessage = function(event: MessageEvent) {
+addEventListener('message', (event: MessageEvent) => {
     // todo переделать на WorkerEventMap если возможно
     switch (event.data.type) {
         case 'integrate':
@@ -14,7 +14,7 @@ let calculator = new IntegrationCalculator();
                 event.data.integrationStep
             )
                 .then(result => {
-                    this.postMessage({
+                    postMessage({
                         type: 'integration-result',
                         id: event.data.id,
                         result: result.baseArray
@@ -22,4 +22,4 @@ let calculator = new IntegrationCalculator();
                 });
             break;
     }
-};
+});

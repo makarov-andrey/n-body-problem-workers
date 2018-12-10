@@ -26,12 +26,12 @@ export class IntegrationCalculator {
             let id = Math.random(),
                 onmessage = (event: MessageEvent) => {
                     if (event.data.type === 'net-gravity-force-calculation-result' && event.data.id === id) {
-                        this.gravityForceCalculationWorkers[bodyIndex].removeEventListener('onmessage', onmessage);
+                        this.gravityForceCalculationWorkers[bodyIndex].removeEventListener('message', onmessage);
                         resolve(event.data.result);
                     }
                 };
 
-            this.gravityForceCalculationWorkers[bodyIndex].addEventListener('onmessage', onmessage);
+            this.gravityForceCalculationWorkers[bodyIndex].addEventListener('message', onmessage);
             this.gravityForceCalculationWorkers[bodyIndex].postMessage({
                 type: 'calculate-net-gravity-force',
                 id: id,
@@ -47,13 +47,13 @@ export class IntegrationCalculator {
                 id = Math.random(),
                 onmessage = (event: MessageEvent) => {
                     if (event.data.type === 'exertion-calculation-result' && event.data.id === id) {
-                        this.gravityForceCalculationWorkers[bodyIndex].removeEventListener('onmessage', onmessage);
+                        this.gravityForceCalculationWorkers[bodyIndex].removeEventListener('message', onmessage);
                         bodyAccessor.rewrite(event.data.result);
                         resolve();
                     }
                 };
 
-            this.gravityForceCalculationWorkers[bodyIndex].addEventListener('onmessage', onmessage);
+            this.gravityForceCalculationWorkers[bodyIndex].addEventListener('message', onmessage);
             this.gravityForceCalculationWorkers[bodyIndex].postMessage({
                 type: 'calculate-exertion',
                 id: id,

@@ -5,7 +5,7 @@ export class Modulator {
     // Переменная хранит в себе примитивный массив со всей информацией о физическом состоянии модели в момент времени.
     // Переменной декларируется в основном потоке и приходит в этот воркер через SharedArrayBuffer, следовательно основной
     // поток так же имеет доступ к содержимому
-    private celestialModel: CelestialModelAccessor;
+    private modelAccessor: CelestialModelAccessor;
     private started = false; // показатель того происходит ли сейчас модуляция в реальном времени
     private integrationStep = settings.maxIntegrationStep; // шаг интеграции
     private integrationWorkers = [
@@ -14,7 +14,7 @@ export class Modulator {
     ];
 
     reset (baseArray: Float64Array) {
-        this.celestialModel = new CelestialModelAccessor(baseArray);
+        this.modelAccessor = new CelestialModelAccessor(baseArray);
     }
 
     start() {
@@ -40,16 +40,16 @@ export class Modulator {
             } while (this.determineMeasurementError(results[0], results[1]) > settings.admissibleMeasurementError);
 
             this.integrationStep = Math.min(this.integrationStep * 8, settings.maxIntegrationStep);
-            this.celestialModel.rewrite(results[0]);
+            this.modelAccessor.rewrite(results[0]);
 
             let realNow = Date.now(),
                 imagineNow = startedTime + settings.integrationTime;
             if (imagineNow < realNow) {
                 //вычисляли слишком долго, надо показывать юзеру, что компуктер не справляется и он смотрит проекцию в замедленном варианте
-                this.celestialModel.timeCoefficient = (imagineNow - startedTime) / (realNow - startedTime);
+                this.modelAccessor.timeCoefficient = (imagineNow - startedTime) / (realNow - startedTime);
             } else {
                 //вычисляли слишком быстро.
-                this.celestialModel.timeCoefficient = 1;
+                this.modelAccessor.timeCoefficient = 1;
                 //костыль для sleep чтобы не обгонять реальное время
                 //todo найти способ сделать точный асинхронный sleep в наносекундах
                 while(Date.now() < imagineNow);
@@ -63,15 +63,15 @@ export class Modulator {
                 let id = Math.random(),
                     onmessage = (event: MessageEvent) => {
                         if (event.data.type === 'integration-result' && event.data.id === id) {
-                            this.integrationWorkers[key].removeEventListener('onmessage', onmessage);
+                            this.integrationWorkers[key].removeEventListener('message', onmessage);
                             resolve(event.data.result);
                         }
                     };
 
-                this.integrationWorkers[key].addEventListener('onmessage', onmessage);
+                this.integrationWorkers[key].addEventListener('message', onmessage);
                 this.integrationWorkers[key].postMessage({
                     type: 'integrate',
-                    model: this.celestialModel.baseArray,
+                    model: this.modelAccessor.baseArray,
                     integrationTime: integrationTime,
                     integrationStep: value,
                     id: id

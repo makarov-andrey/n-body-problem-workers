@@ -3,7 +3,7 @@ import {Modulator} from "../lib/Modulator";
 
 let modulator = new Modulator();
 
-self.onmessage = function(event: MessageEvent) {
+addEventListener('message', (event: MessageEvent) => {
     // todo переделать на WorkerEventMap если возможно
     switch (event.data.type) {
         case 'reset':
@@ -16,4 +16,4 @@ self.onmessage = function(event: MessageEvent) {
             modulator.stop();
             break;
     }
-};
+});
